@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "494757854819",
+    "project_id": "my-ride-20148",
+    "storage_bucket": "my-ride-20148.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494757854819:android:869194d84234af744d0256",
+        "android_client_info": {
+          "package_name": "com.example.myride"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494757854819-3ftts6mcdfrsr1ife3etbllt6d1q48of.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJLTybzKGEKTlk5e74rJgL9iVdH-ZpaFg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494757854819-3ftts6mcdfrsr1ife3etbllt6d1q48of.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
