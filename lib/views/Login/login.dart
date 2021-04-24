@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myride/views/Login/signUp.dart';
+import 'package:myride/views/Others/progressDialog.dart';
 import 'package:myride/views/constants.dart';
 import 'package:get/get.dart';
 
@@ -25,12 +26,22 @@ class LoginScreen extends StatelessWidget {
   }
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  void loginAndAuthUser() async {
+  void loginAndAuthUser(BuildContext context) async {
+    //showing loading
+    showDialog(
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return ProgressDialog(
+            message: "Please wait",
+          );
+        },
+        context: context);
     final User firebaseUserLogin = (await _firebaseAuth
             .signInWithEmailAndPassword(
                 email: emailEditingController.text,
                 password: passwordEditingController.text)
             .catchError((errMsg) {
+      Navigator.pop(context);
       displayToast("Error");
     }))
         .user;
@@ -39,14 +50,16 @@ class LoginScreen extends StatelessWidget {
       //save user info into database
       usersRef.child(firebaseUserLogin.uid).once().then((DataSnapshot snap) {
         if (snap.value != null) {
-          Get.off(HomePage());
+          Get.offAll(HomePage());
           displayToast("Successfully logged in");
         } else {
+          Navigator.pop(context);
           _firebaseAuth.signOut();
           displayToast("No record found");
         }
       });
     } else {
+      Navigator.pop(context);
       displayToast("Error sign in");
     }
   }
@@ -104,7 +117,7 @@ class LoginScreen extends StatelessWidget {
                     } else if (passwordEditingController.text.isEmpty) {
                       displayToast("Password can not be empty");
                     } else {
-                      loginAndAuthUser();
+                      loginAndAuthUser(context);
                     }
                   },
                   color: Colors.green[400],

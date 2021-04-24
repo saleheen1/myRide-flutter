@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:myride/main.dart';
 import 'package:myride/views/Login/login.dart';
+import 'package:myride/views/Others/progressDialog.dart';
 import 'package:myride/views/constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myride/views/home.dart';
@@ -28,11 +29,20 @@ class SignUp extends StatelessWidget {
 
     final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
     void registerNewUser(BuildContext context) async {
+      showDialog(
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return ProgressDialog(
+              message: "Please wait",
+            );
+          },
+          context: context);
       final User firebaseUser = (await _firebaseAuth
               .createUserWithEmailAndPassword(
                   email: emailEditingController.text,
                   password: passwordEditingController.text)
               .catchError((errMsg) {
+        Navigator.pop(context);
         displayToast("Error ${errMsg.toString()}");
       }))
           .user;
@@ -48,8 +58,9 @@ class SignUp extends StatelessWidget {
         };
         usersRef.child(firebaseUser.uid).set(userDataMap);
         displayToast("Account created successfully");
-        Get.off(HomePage());
+        Get.offAll(HomePage());
       } else {
+        Navigator.pop(context);
         displayToast("User was not created");
       }
     }
