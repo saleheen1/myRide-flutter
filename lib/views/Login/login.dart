@@ -1,9 +1,56 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myride/views/Login/signUp.dart';
 import 'package:myride/views/constants.dart';
 import 'package:get/get.dart';
 
+import '../../main.dart';
+import '../home.dart';
+
 class LoginScreen extends StatelessWidget {
+  TextEditingController emailEditingController = TextEditingController();
+  TextEditingController passwordEditingController = TextEditingController();
+
+  displayToast(message) {
+    return Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+        fontSize: 16.0);
+  }
+
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  void loginAndAuthUser() async {
+    final User firebaseUserLogin = (await _firebaseAuth
+            .signInWithEmailAndPassword(
+                email: emailEditingController.text,
+                password: passwordEditingController.text)
+            .catchError((errMsg) {
+      displayToast("Error");
+    }))
+        .user;
+
+    if (firebaseUserLogin != null) {
+      //save user info into database
+      usersRef.child(firebaseUserLogin.uid).once().then((DataSnapshot snap) {
+        if (snap.value != null) {
+          Get.off(HomePage());
+          displayToast("Successfully logged in");
+        } else {
+          _firebaseAuth.signOut();
+          displayToast("No record found");
+        }
+      });
+    } else {
+      displayToast("Error sign in");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +73,7 @@ class LoginScreen extends StatelessWidget {
                   height: 30,
                 ),
                 TextField(
+                  controller: emailEditingController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                       labelText: "Email",
@@ -37,6 +85,7 @@ class LoginScreen extends StatelessWidget {
                   height: 30,
                 ),
                 TextField(
+                  controller: passwordEditingController,
                   obscureText: true,
                   decoration: InputDecoration(
                       labelText: "Password",
@@ -49,7 +98,15 @@ class LoginScreen extends StatelessWidget {
                 ),
                 FlatButton(
                   padding: EdgeInsets.all(14),
-                  onPressed: () {},
+                  onPressed: () {
+                    if (!emailEditingController.text.contains("@")) {
+                      displayToast("Invalid email");
+                    } else if (passwordEditingController.text.isEmpty) {
+                      displayToast("Password can not be empty");
+                    } else {
+                      loginAndAuthUser();
+                    }
+                  },
                   color: Colors.green[400],
                   child: Text(
                     "Login",
