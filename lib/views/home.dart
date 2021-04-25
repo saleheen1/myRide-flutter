@@ -4,13 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:myride/views/constants.dart';
 import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 
+import 'Others/drawer.dart';
+
 class HomePage extends StatelessWidget {
+  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
   Completer<PlatformMapController> _controllerGoogleMap = Completer();
   PlatformMapController newGooglemapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
         child: Stack(
           children: [
@@ -103,9 +108,40 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
+
+            //hamburger icon
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        _scaffoldKey.currentState.openDrawer();
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(
+                          Icons.menu,
+                          color: kGrey,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
+      drawer: appDrawer(),
     );
   }
 }
