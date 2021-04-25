@@ -3,11 +3,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:myride/views/constants.dart';
 import 'package:platform_maps_flutter/platform_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'Others/drawer.dart';
 
 class HomePage extends StatelessWidget {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+
+  //code for getting location
+  Position currentPosition;
+  var geoLocator = Geolocator();
+  void locatePosition() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currentPosition = position;
+    LatLng latlongPosition = LatLng(position.latitude, position.longitude);
+    CameraPosition cameraPosition =
+        new CameraPosition(target: latlongPosition, zoom: 14);
+    newGooglemapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
 
   Completer<PlatformMapController> _controllerGoogleMap = Completer();
   PlatformMapController newGooglemapController;
@@ -26,9 +41,13 @@ class HomePage extends StatelessWidget {
                 target: const LatLng(47.6, 8.8796),
                 zoom: 16.0,
               ),
+              myLocationEnabled: true,
+              // zoomControlsEnabled: true,
+              // zoomGesturesEnabled: true,
               onMapCreated: (PlatformMapController controller) {
                 _controllerGoogleMap.complete(controller);
                 newGooglemapController = controller;
+                locatePosition();
               },
             ),
             Positioned(
